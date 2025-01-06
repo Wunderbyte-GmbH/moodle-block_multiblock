@@ -26,6 +26,8 @@ namespace block_multiblock\form;
 
 use block_multiblock_proxy_edit_form;
 
+use moodle_page;
+use block_base;
 /**
  * Base class for common support when editing a multiblock subblock.
  *
@@ -40,36 +42,51 @@ use block_multiblock_proxy_edit_form;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class editblock_base extends block_multiblock_proxy_edit_form {
-    /** @var block_base $block The block class instance that belongs to the block type being edited */
-    public $block;
-
-    /** @var object The page object for the page which contains the block being edited */
-    public $page;
 
     /** @var object The multiblock object being edited */
     public $multiblock;
 
     /**
-     * Creates the instance-specific editing form.
-     *
-     * @param string|moodle_url $actionurl The form action to submit to
-     * @param block_base $block The block class being edited
-     * @param object $page The contextually appropriate $PAGE type object of the block being edited
-     * @param object $multiblock The multiblock object being edited (mostly for its configuration
+     * The block instance we are editing.
+     * @var block_base
      */
-    public function __construct($actionurl, $block, $page, $multiblock = null) {
-        $this->block = $block->blockinstance;
-        $this->block->instance->visible = true;
-        $this->block->instance->region = $this->block->instance->defaultregion;
-        $this->block->instance->weight = $this->block->instance->defaultweight;
-        $this->page = $page;
-        $this->multiblock = $multiblock;
+    private $_block;
+    /**
+     * The page we are editing this block in association with.
+     * @var moodle_page
+     */
+    private $_page;
 
-        if (!empty($this->block->configdata)) {
-            $this->block->config = @unserialize(base64_decode($this->block->configdata));
+    /**
+     * Page where we are adding or editing the block
+     *
+     * To access you can also use magic property $this->page
+     *
+     * @return moodle_page
+     */
+    protected function get_page(): moodle_page {
+        if (!$this->_page && !empty($this->_customdata['page'])) {
+            $this->_page = $this->_customdata['page'];
         }
+        return $this->_page;
+    }
 
-        parent::__construct($actionurl, $this->block, $this->page);
+    /**
+     * Instance of the block that is being added or edited
+     *
+     * To access you can also use magic property $this->block
+     *
+     * If {{@see self::display_form_when_adding()}} returns true and the configuration
+     * form is displayed when adding block, the $this->block->id will be null.
+     *
+     * @return block_base
+     */
+    protected function get_block(): block_base {
+        $this->multiblock = $this->_customdata['multiblock'];
+        if (!$this->_block && !empty($this->_customdata['block'])) {
+            $this->_block = $this->_customdata['block'];
+        }
+        return $this->_block;
     }
 
     /**
@@ -85,8 +102,10 @@ class editblock_base extends block_multiblock_proxy_edit_form {
 
         // If the page type indicates we're not on a wildcard page, we can probably* go back there.
         // Note: * for some definition of probably.
-        if (strpos($this->multiblock->instance->pagetypepattern, '*') === false) {
-            $buttonarray[] = &$mform->createElement('submit', 'saveanddisplay', get_string('savechangesanddisplay'));
+        if (isset($this->multiblock->instance->pagetypepattern)) {
+            if (strpos($this->multiblock->instance->pagetypepattern, '*') === false) {
+                $buttonarray[] = &$mform->createElement('submit', 'saveanddisplay', get_string('savechangesanddisplay'));
+            }
         }
 
         $buttonarray[] = &$mform->createElement('cancel');
