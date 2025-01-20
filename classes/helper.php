@@ -301,7 +301,10 @@ class helper {
         if (static::is_totara()) {
             return new editblock_totara($actionurl, $block, $page, $multiblock);
         } else {
-            return new editblock($actionurl, $block, $page, $multiblock);
+            $customdata['block'] = $block->blockinstance;
+            $customdata['page'] = $page;
+            $customdata['multiblock'] = $multiblock;
+            return new editblock($actionurl->out(false), $customdata, 'post');
         }
     }
 }
