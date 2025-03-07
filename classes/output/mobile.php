@@ -53,9 +53,22 @@ class mobile {
             if (block_load_class($block->blockname)) {
                 // Make the proxy class we'll need.
                 $subblockinstance = block_instance($block->blockname, $block);
+                if ($subblockinstance->get_content()->text) {
+                    $content = $subblockinstance->get_content()->text;
+                } else {
+                    $rows = $subblockinstance->get_content();
+                    $content = '';
+                    foreach ($rows as $key => $items) {
+                        if ($key != 'footer') {
+                            if (!empty($items) && is_array($items)) {
+                                $content = implode(" - ", $items);
+                            }
+                        }
+                    }
+                }
                 $multiblock[$id]["id"] = $id;
                 $multiblock[$id]["title"] = $subblockinstance->get_title();
-                $multiblock[$id]["content"] = format_text($subblockinstance->get_content()->text);
+                $multiblock[$id]["content"] = $content;
             }
         }
         $data = [
