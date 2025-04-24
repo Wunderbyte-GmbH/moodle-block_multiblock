@@ -130,6 +130,18 @@ if ($newblockdata = $addblock->get_data()) {
             blocks_delete_instance($blockinstance->instance);
             redirect($parenturl);
             break;
+        case 'permissions':
+            $returnurl = navigation::get_page_url($blockid);
+
+            $blockcontext = context_block::instance($actionableinstance);
+
+            $url = new moodle_url('/admin/roles/permissions.php', [
+                'contextid' => $blockcontext->id,
+                'returnurl' => $returnurl->out(),
+            ]);
+
+            redirect($url);
+            break;
     }
 }
 
@@ -209,6 +221,14 @@ if (empty($multiblockblocks)) {
         } else {
             $actions .= icon_helper::space();
         }
+
+        // Set the context permissions.
+        $url = $baseactionurl;
+        $url->params(['action' => 'permissions']);
+        $actions .= $OUTPUT->action_icon(
+            $url,
+            icon_helper::permission(get_string('permissions', 'block_multiblock'))
+        );
 
         // Split out to parent context.
         $url = $baseactionurl;
