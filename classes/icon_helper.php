@@ -141,11 +141,12 @@ class icon_helper {
 
     /**
      * Returns a permission icon.
+     * @param string $str
      *
      * @return mixed An icon object for rendering.
+     *
      */
     public static function permission(string $str) {
-        global $OUTPUT;
 
         return new pix_icon('i/permissions', $str, 'moodle', []);
     }
