@@ -214,6 +214,11 @@ class block_multiblock extends block_base {
             if (empty($block->blockinstance)) {
                 continue;
             }
+
+            if (!has_capability('moodle/block:view', $block->blockinstance->context)) {
+                continue;
+            }
+
             $content = $block->blockinstance->get_content_for_output($this->output);
             $multiblock[] = [
                 'id' => $id,

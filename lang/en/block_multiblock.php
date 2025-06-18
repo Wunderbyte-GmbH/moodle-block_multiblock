@@ -51,6 +51,7 @@ $string['multiblock_subblock_desc'] = 'Select the subblocks to be added by defau
 $string['multiblock:addinstance'] = 'Add a Multiblock';
 $string['multiblock:myaddinstance'] = 'Add a Multiblock to Dashboard';
 
+$string['permissions'] = 'Permission';
 $string['presentation'] = 'Multiblock presentation style';
 $string['presentation:accordion'] = 'Accordion';
 $string['presentation:carousel'] = 'Carousel';
